@@ -1,0 +1,488 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Phantom Jam Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Overpass:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #ECEEEA;
+  --ink: #1D2622;
+  --muted: #55605A;
+  --rule: #C9CFCA;
+  --sign: #0D6A46;
+  --sign-ink: #FFFFFF;
+  --asphalt: #2E3336;
+  --edge: #E6EAE5;
+  --red: #FF4D5A;
+  --amber: #F5A623;
+  --pale: #E9EEE8;
+  --ai: #5B9BFF;
+  --focus: #0D6A46;
+  --button: #FFFFFF;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #161B1A; --ink: #E5EAE6; --muted: #A2ACA6; --rule: #2F3735;
+    --asphalt: #262C2E; --edge: #CBD1CC; --focus: #7ED3AC; --button: #1F2524;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #161B1A; --ink: #E5EAE6; --muted: #A2ACA6; --rule: #2F3735;
+  --asphalt: #262C2E; --edge: #CBD1CC; --focus: #7ED3AC; --button: #1F2524;
+  color-scheme: dark;
+}
+:root { box-sizing: border-box; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+html { scroll-padding-top: env(safe-area-inset-top, 0px); background: var(--bg); }
+*, *::before, *::after { box-sizing: inherit; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: "Overpass", "Helvetica Neue", Arial, sans-serif;
+  font-size: 17px; line-height: 1.55; -webkit-font-smoothing: antialiased;
+}
+.wrap { max-width: 1120px; margin: 0 auto; padding: 28px 20px 56px; }
+a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+a:hover { text-decoration-thickness: 2px; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 6px; }
+
+/* The one loud element: a highway guide sign. */
+.sign {
+  background: var(--sign); color: var(--sign-ink);
+  border-radius: 20px; padding: 26px 30px 24px;
+  box-shadow: inset 0 0 0 5px var(--sign), inset 0 0 0 8px var(--sign-ink);
+  max-width: 760px;
+}
+.sign h1 { margin: 0; font-weight: 800; font-size: clamp(2.3rem, 6.2vw, 3.7rem); line-height: 1.02; letter-spacing: -0.01em; }
+.sign p { margin: 10px 0 0; font-size: clamp(1.02rem, 2.2vw, 1.2rem); font-weight: 600; max-width: 34em; }
+.lede { max-width: 62ch; margin: 18px 0 0; color: var(--muted); }
+
+.lab { display: grid; gap: 28px; margin-top: 30px; align-items: start; }
+@media (min-width: 880px) { .lab { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); } }
+.ring-wrap { width: 100%; max-width: 560px; justify-self: center; }
+#ring { display: block; width: 100%; aspect-ratio: 1 / 1; }
+
+.panel { display: flex; flex-direction: column; gap: 18px; }
+.control { border: 0; margin: 0; padding: 0; min-width: 0; }
+.control > .label, .control legend { font-weight: 800; font-size: 1rem; padding: 0; margin-bottom: 6px; display: block; }
+.slider-row { display: flex; align-items: center; gap: 14px; }
+input[type="range"] { flex: 1; accent-color: var(--sign); min-width: 0; height: 28px; }
+output { font-variant-numeric: tabular-nums; font-weight: 600; min-width: 9.5em; text-align: right; }
+.choice { display: grid; gap: 8px; }
+.choice label {
+  display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; align-items: start;
+  padding: 10px 12px; border: 1px solid var(--rule); border-radius: 10px; cursor: pointer;
+}
+.choice input { margin-top: 5px; accent-color: var(--sign); }
+.choice strong { font-weight: 800; }
+.choice span { grid-column: 2; color: var(--muted); font-size: 0.93rem; line-height: 1.4; }
+.choice label:has(input:checked) { border-color: var(--sign); box-shadow: inset 0 0 0 1px var(--sign); }
+.buttons { display: flex; flex-wrap: wrap; gap: 10px; }
+button, .speed label {
+  font: inherit; font-weight: 800; font-size: 0.98rem; color: var(--ink); background: var(--button);
+  border: 1px solid var(--rule); border-radius: 10px; padding: 9px 16px; cursor: pointer;
+}
+button.primary { background: var(--sign); color: var(--sign-ink); border-color: var(--sign); }
+button:active { transform: translateY(1px); }
+.speed { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.speed .label { font-weight: 800; margin-right: 4px; }
+.speed input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.speed label { padding: 6px 12px; font-variant-numeric: tabular-nums; }
+.speed label:has(input:checked) { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.speed label:has(input:focus-visible) { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+.readouts { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin: 0; border-top: 1px solid var(--rule); }
+.readouts div { padding: 10px 0 8px; border-bottom: 1px solid var(--rule); }
+.readouts div:nth-child(odd) { padding-right: 12px; border-right: 1px solid var(--rule); }
+.readouts div:nth-child(even) { padding-left: 14px; }
+.readouts dt { font-size: 0.88rem; color: var(--muted); }
+.readouts dd { margin: 0; font-weight: 800; font-size: 1.55rem; font-variant-numeric: tabular-nums; line-height: 1.2; }
+.forecast { display: grid; gap: 6px; }
+.forecast .top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.forecast .top strong { font-weight: 800; }
+.forecast .pct { font-weight: 800; font-size: 1.35rem; font-variant-numeric: tabular-nums; }
+.meter { height: 12px; border-radius: 6px; background: var(--rule); overflow: hidden; }
+.meter i { display: block; height: 100%; width: 0%; background: var(--sign); border-radius: 6px; transition: width 0.3s linear, background-color 0.3s; }
+.forecast p { margin: 0; font-size: 0.88rem; color: var(--muted); }
+.hint { margin: 0; font-size: 0.95rem; color: var(--muted); }
+.hint b { color: var(--ink); }
+
+section.block { margin-top: 52px; }
+h2 { font-weight: 800; font-size: 1.55rem; line-height: 1.2; margin: 0 0 8px; }
+h3 { font-weight: 800; font-size: 1.18rem; line-height: 1.3; margin: 0 0 6px; }
+.block > p, .qa p { max-width: 70ch; }
+.ts-wrap { margin-top: 14px; border-radius: 14px; overflow: hidden; background: var(--asphalt); }
+#ts { display: block; width: 100%; height: 260px; }
+.key { list-style: none; padding: 0; margin: 12px 0 0; display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 0.92rem; color: var(--muted); }
+.key li { display: flex; align-items: center; gap: 7px; }
+.key i { width: 14px; height: 9px; border-radius: 3px; display: inline-block; }
+
+.qa { display: grid; grid-template-columns: minmax(0, 1fr); gap: 30px; margin-top: 18px; }
+.qa article, .lab > * { min-width: 0; }
+@media (min-width: 880px) { .qa { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 40px; } .qa article:first-child { grid-column: 1 / -1; } }
+.qa article { border-top: 3px solid var(--ink); padding-top: 12px; }
+.table-wrap { overflow-x: auto; margin-top: 12px; max-width: 760px; }
+table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; font-size: 0.95rem; }
+th, td { text-align: right; padding: 7px 10px; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; white-space: normal; }
+thead th { font-weight: 800; border-bottom: 2px solid var(--ink); vertical-align: bottom; }
+caption { caption-side: bottom; text-align: left; color: var(--muted); font-size: 0.86rem; padding-top: 8px; }
+.sources ol { padding-left: 1.3em; max-width: 78ch; }
+.sources li { margin-bottom: 6px; }
+footer { margin-top: 56px; padding-top: 16px; border-top: 1px solid var(--rule); color: var(--muted); font-size: 0.9rem; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (prefers-reduced-motion: reduce) { .meter i { transition: none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="sign">
+    <h1>Phantom Jam Lab</h1>
+    <p>22 cars on a 260 m loop. Nobody crashes, nobody merges, and a traffic jam shows up anyway.</p>
+  </div>
+  <p class="lede">Watch a jam form with all human drivers. Then slide AI cars into the loop and compare two kinds of AI: one built to smooth traffic, and one that copies the car ahead the way 2018-era adaptive cruise control did.</p>
+</header>
+
+<main>
+<section class="lab" aria-label="Simulation">
+  <div class="ring-wrap">
+    <canvas id="ring" role="img" aria-label="Top-down view of 22 cars driving around a one-lane circular track. Red cars are stopped, amber are slow, pale are cruising, blue are AI cars."></canvas>
+  </div>
+  <div class="panel">
+    <div class="control">
+      <label class="label" for="ai">AI cars in the loop</label>
+      <div class="slider-row">
+        <input type="range" id="ai" min="0" max="22" step="1" value="0">
+        <output id="aiOut" for="ai">0 of 22 cars</output>
+      </div>
+    </div>
+    <fieldset class="control">
+      <legend>How the AI cars drive</legend>
+      <div class="choice">
+        <label><input type="radio" name="style" value="smooth" checked><strong>Smoothing</strong><span>Holds its own average speed and lets the gap ahead grow and shrink.</span></label>
+        <label><input type="radio" name="style" value="copycat"><strong>Copycat</strong><span>Reacts to the car ahead about one second late, like the cruise control tested in 2019.</span></label>
+      </div>
+    </fieldset>
+    <div class="buttons">
+      <button type="button" id="tap" class="primary">Tap the brakes</button>
+      <button type="button" id="play">Pause</button>
+      <button type="button" id="restart">Restart</button>
+    </div>
+    <div class="speed" role="radiogroup" aria-label="Simulation speed">
+      <span class="label">Sim speed</span>
+      <label><input type="radio" name="speed" value="1">1x</label>
+      <label><input type="radio" name="speed" value="4" checked>4x</label>
+      <label><input type="radio" name="speed" value="10">10x</label>
+    </div>
+    <dl class="readouts">
+      <div><dt>Average speed, last minute</dt><dd id="rAvg">0 mph</dd></div>
+      <div><dt>Speed swing, last minute</dt><dd id="rSwing">0 mph</dd></div>
+      <div><dt>Hard brakes, last minute</dt><dd id="rBrakes">0</dd></div>
+      <div><dt>Cars stopped right now</dt><dd id="rStopped">0</dd></div>
+    </dl>
+    <div class="forecast">
+      <div class="top"><strong id="fcLabel">Jam risk in the next minute</strong><span class="pct" id="fcPct">...</span></div>
+      <div class="meter" aria-hidden="true"><i id="fcBar"></i></div>
+      <p>Machine-learning forecast (logistic regression) trained on 2,500 simulated runs. It needs 20 seconds of traffic to start.</p>
+    </div>
+    <p class="hint"><b>Try this:</b> let the red jam form, then set AI cars to 1. After that, switch the AI to copycat.</p>
+    <p class="sr" aria-live="polite" id="live"></p>
+  </div>
+</section>
+
+<section class="block" aria-labelledby="tsTitle">
+  <h2 id="tsTitle">Every car over the last two minutes</h2>
+  <p>Each dotted line is one car circling the loop, with time running left to right and position going up. Where cars stop, the dots bunch up and turn red. Watch those red bands slide downward: the jam itself is moving backward, against the traffic.</p>
+  <div class="ts-wrap"><canvas id="ts" role="img" aria-label="Time-space diagram of every car's position around the loop over the last two minutes, colored by speed."></canvas></div>
+  <ul class="key">
+    <li><i style="background:var(--red)"></i>Stopped</li>
+    <li><i style="background:var(--amber)"></i>Slow</li>
+    <li><i style="background:var(--pale); outline:1px solid var(--rule)"></i>Cruising</li>
+    <li><i style="background:var(--ai)"></i>AI car</li>
+  </ul>
+</section>
+
+<section class="block" aria-labelledby="qaTitle">
+  <h2 id="qaTitle">What I wanted to know</h2>
+  <div class="qa">
+    <article>
+      <h3>What if just one car in 22 drove itself?</h3>
+      <p>In my runs, one smoothing AI car took the speed swing from 8.8 mph down to 1.2 mph, and hard braking disappeared. The real test points the same way. In 2016, researchers drove a loop just like this one in Tucson with a single automated car and cut the speed swing by 50 to 81 percent and fuel use by 22 to 43 percent.</p>
+      <p>The surprises came at the extremes. One copycat cruise-control car made the jam a little worse. And when all 22 cars ran the smoothing controller, traffic went smooth but slow, settling around 9.7 mph, because each car only copies its own past speed and nobody is left to set the pace.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th scope="col">Who is driving</th><th scope="col">Average speed (mph)</th><th scope="col">Speed swing (mph)</th><th scope="col">Hard brakes per minute</th><th scope="col">Time stopped</th></tr></thead>
+          <tbody>
+            <tr><td>All 22 human</td><td>10.4</td><td>8.8</td><td>44</td><td>25%</td></tr>
+            <tr><td>1 smoothing AI car</td><td>16.1</td><td>1.2</td><td>0</td><td>0%</td></tr>
+            <tr><td>2 smoothing AI cars</td><td>16.0</td><td>0.8</td><td>0</td><td>0%</td></tr>
+            <tr><td>1 copycat cruise control</td><td>9.6</td><td>9.2</td><td>46</td><td>32%</td></tr>
+            <tr><td>All 22 copycat</td><td>4.4</td><td>8.8</td><td>22</td><td>72%</td></tr>
+            <tr><td>All 22 smoothing AI</td><td>9.7</td><td>0.9</td><td>0</td><td>0%</td></tr>
+          </tbody>
+          <caption>Average of 10 runs per row. Each run lasts 10 minutes with one hard brake tap at 3 seconds, measured over the last 5 minutes. Speed swing is the standard deviation of every car's speed.</caption>
+        </table>
+      </div>
+    </article>
+    <article>
+      <h3>Why does a jam move backward?</h3>
+      <p>Physicists model traffic like a fluid. A jam is a wave: cars leave its front and new cars join its back, so the wave rolls upstream while every car keeps moving forward. In a 2008 experiment run by Japanese physicists, 22 drivers on a 230 m track were asked to cruise at about 30 km/h. A jam formed with no bottleneck at all and rolled backward at roughly 20 km/h (12 mph), about the speed jams move on real highways.</p>
+      <p>MIT mathematicians later called these waves jamitons and found their equations look a lot like the ones for detonation waves from explosions. They even have a point that works like a black hole's event horizon: news that the road ahead is clear cannot reach the drivers stuck behind it.</p>
+    </article>
+    <article>
+      <h3>Could AI warn about a jam, or fix one, on the Van Wyck?</h3>
+      <p>Fixing one takes better software than most cars have today. Researchers tested seven 2018 car models with adaptive cruise control, and all seven made small slowdowns bigger. In a line of seven identical cars, a 6 mph dip grew to 25 mph by the back. The copycat setting here uses response numbers fitted to one of those cars. Smoothing does work, but it needs a buffer gap, and on a crowded expressway someone will cut into it. The 100-car test on I-24 near Nashville in November 2022 had to tune its cars so the gaps they left would not annoy or invite other drivers.</p>
+      <p>Warning about one is harder than I expected. The risk gauge above comes from a model I trained on 2,500 simulated runs to predict a jam 60 seconds ahead. On runs it never saw, it scored 0.82 on a measure called AUC (0.5 is a coin flip, 1.0 is perfect), beating a simple rule of thumb at 0.70. At its alert setting it caught about two thirds of jams, but only about half its alerts came true. Phantom jams grow out of tiny random wobbles, which is exactly what makes them hard to see coming.</p>
+    </article>
+  </div>
+</section>
+
+<section class="block" aria-labelledby="limTitle">
+  <h2 id="limTitle">What this sim leaves out</h2>
+  <p>One lane, no exits, no lane changes, no trucks. The human drivers follow the Intelligent Driver Model, a standard textbook model, plus a little random noise. The smoothing AI only knows its own speed and the gap ahead. My speed gains come out bigger than the real experiment's, likely because my simulated drivers stop completely more often than the real ones did.</p>
+</section>
+
+<section class="block sources" aria-labelledby="srcTitle">
+  <h2 id="srcTitle">Sources</h2>
+  <ol>
+    <li>Sugiyama, Y. et al. (2008). <a href="https://ir.library.osaka-u.ac.jp/repo/ouka/all/93262/NewJPhys_10_033001.pdf">Traffic jams without bottlenecks: experimental evidence for the physical mechanism of the formation of a jam</a>. New Journal of Physics 10, 033001.</li>
+    <li>Stern, R. E. et al. (2018). <a href="https://arxiv.org/abs/1705.01693">Dissipation of stop-and-go waves via control of autonomous vehicles: Field experiments</a>. Transportation Research Part C 89, 205 to 221.</li>
+    <li>Gunter, G. et al. (2019 preprint). <a href="https://arxiv.org/abs/1905.02108">Are commercially implemented adaptive cruise control systems string stable?</a> IEEE Transactions on Intelligent Transportation Systems.</li>
+    <li>Trafton, A. (2009). <a href="https://news.mit.edu/2009/traffic-0609">Mathematicians take aim at "phantom" traffic jams</a>. MIT News.</li>
+    <li>Manke, K. (2022). <a href="https://news.berkeley.edu/2022/11/22/massive-traffic-experiment-pits-machine-learning-against-phantom-jams/">Massive traffic experiment pits machine learning against "phantom" jams</a>. Berkeley News.</li>
+    <li>Treiber, M., Hennecke, A. and Helbing, D. (2000). Congested traffic states in empirical observations and microscopic simulations. Physical Review E 62, 1805. (Model used for the human drivers.)</li>
+  </ol>
+</section>
+</main>
+
+<footer>Built for SCI 1000 at St. John's University, fall 2026. Simulation and page code written with Claude; the jam forecast was trained in Python with scikit-learn.</footer>
+</div>
+
+<script>
+/*SIM*/
+/*FEATURES*/
+const MODEL = /*MODEL*/;
+
+(function () {
+  const MPH = 2.23694;
+  const ring = document.getElementById('ring'), ts = document.getElementById('ts');
+  const rctx = ring.getContext('2d'), tctx = ts.getContext('2d');
+  const aiInput = document.getElementById('ai'), aiOut = document.getElementById('aiOut');
+  const playBtn = document.getElementById('play'), live = document.getElementById('live');
+  const css = getComputedStyle(document.documentElement);
+  const col = name => css.getPropertyValue(name).trim();
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  let sim, S = [], playing = !reduceMotion, speed = 4, simAcc = 0, last = performance.now();
+  let autoTapped = false, flashCar = -1, flashUntil = 0, lastStatus = '', lastUi = 0, lastTs = 0;
+
+  function style() { return document.querySelector('input[name="style"]:checked').value; }
+  function hex(c) { const m = c.replace('#', ''); return [parseInt(m.slice(0, 2), 16), parseInt(m.slice(2, 4), 16), parseInt(m.slice(4, 6), 16)]; }
+  function mix(a, b, t) { return `rgb(${a.map((x, i) => Math.round(x + (b[i] - x) * t)).join(',')})`; }
+  let PAL = {}, LUT = [], palKey = '';
+  function refreshPalette() {
+    const names = ['--red', '--amber', '--pale', '--ai', '--asphalt', '--edge', '--ink', '--muted', '--sign'];
+    const vals = names.map(col), key = vals.join('|');
+    if (key === palKey) return;
+    palKey = key; names.forEach((n, i) => { PAL[n.slice(2)] = vals[i]; });
+    const red = hex(PAL.red), amber = hex(PAL.amber), pale = hex(PAL.pale);
+    LUT = [];
+    for (let j = 0; j <= 120; j++) {
+      const v = j / 10;
+      LUT.push(v <= 3.5 ? mix(red, amber, v / 3.5) : mix(amber, pale, Math.min(1, (v - 3.5) / 4)));
+    }
+  }
+  function speedColor(v) { return LUT[Math.max(0, Math.min(120, Math.round(v * 10)))]; }
+  function say(msg) { live.textContent = msg; }
+
+  function restart() {
+    sim = createSim({ numAI: +aiInput.value, aiStyle: style(), seed: Math.floor(Math.random() * 1e9) });
+    S = []; simAcc = 0; autoTapped = false; flashCar = -1;
+    S.push(snapshot());
+  }
+  function tap(auto) {
+    let i = sim.tapBrakes();
+    if (i < 0) { i = Math.floor(Math.random() * sim.N); sim.tapCar(i, 1.5); }
+    flashCar = i; flashUntil = performance.now() + 1600;
+    say(auto ? 'At 3 seconds, one driver tapped the brakes.' : 'A driver tapped the brakes.');
+  }
+  function snapshot() {
+    const s = takeSample(sim);
+    s.v = Float32Array.from(sim.v); s.x_ = Float32Array.from(sim.x);
+    s.ai = sim.kind.map(k => k !== 'human'); s.hb = sim.hardBrakes;
+    return s;
+  }
+  function stepOnce() {
+    if (!autoTapped && sim.t >= 3) { autoTapped = true; tap(true); }
+    sim.step();
+    if (Math.round(sim.t / sim.dt) % 5 === 0) {
+      S.push(snapshot()); if (S.length > 300) S.shift();
+    }
+  }
+
+  function fit(canvas, cssH) {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const w = canvas.clientWidth, h = cssH || canvas.clientHeight;
+    if (canvas.width !== Math.round(w * dpr) || canvas.height !== Math.round(h * dpr)) {
+      canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr);
+    }
+    return { w, h, dpr };
+  }
+
+  function recentSd() {
+    const n = Math.min(10, S.length); let s = 0;
+    for (let j = S.length - n; j < S.length; j++) s += S[j].sd;
+    return n ? s / n : 0;
+  }
+  function statusText() {
+    const sd = recentSd();
+    if (sim.t < 4) return 'Rolling evenly';
+    if (sd > 2.5) return 'Stop-and-go wave';
+    if (sd > 1.2) return 'Ripples building';
+    return 'Smooth flow';
+  }
+
+  function drawRing(now) {
+    refreshPalette();
+    const { w, dpr } = fit(ring);
+    const c = rctx; c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, w, w);
+    const cx = w / 2, cy = w / 2, R = w * 0.40, lane = Math.max(18, w * 0.075);
+    c.lineWidth = lane; c.strokeStyle = PAL.asphalt;
+    c.beginPath(); c.arc(cx, cy, R, 0, Math.PI * 2); c.stroke();
+    c.lineWidth = 1.5; c.strokeStyle = PAL.edge; c.globalAlpha = 0.7;
+    c.beginPath(); c.arc(cx, cy, R + lane / 2 - 3, 0, Math.PI * 2); c.stroke();
+    c.beginPath(); c.arc(cx, cy, R - lane / 2 + 3, 0, Math.PI * 2); c.stroke();
+    c.globalAlpha = 1;
+    const carL = (sim.carLen / sim.L) * Math.PI * 2 * R * 0.92, carW = lane * 0.40;
+    for (let i = 0; i < sim.N; i++) {
+      const th = -Math.PI / 2 + ((sim.x[i] - sim.carLen / 2) / sim.L) * Math.PI * 2;
+      const px = cx + R * Math.cos(th), py = cy + R * Math.sin(th);
+      c.save(); c.translate(px, py); c.rotate(th + Math.PI / 2);
+      const ai = sim.kind[i] !== 'human';
+      c.fillStyle = ai ? PAL.ai : speedColor(sim.v[i]);
+      roundRect(c, -carL / 2, -carW / 2, carL, carW, Math.min(4, carW / 3)); c.fill();
+      if (ai) { c.lineWidth = 1.5; c.strokeStyle = '#FFFFFF'; c.stroke(); }
+      c.restore();
+      if (i === flashCar && now < flashUntil) {
+        const k = 1 - (flashUntil - now) / 1600;
+        c.beginPath(); c.arc(px, py, carL * (0.7 + k * 1.2), 0, Math.PI * 2);
+        c.strokeStyle = PAL.red; c.globalAlpha = 1 - k; c.lineWidth = 3; c.stroke(); c.globalAlpha = 1;
+      }
+    }
+    // Center readout
+    let m = 0; for (let i = 0; i < sim.N; i++) m += sim.v[i]; m /= sim.N;
+    c.fillStyle = PAL.ink; c.textAlign = 'center'; c.textBaseline = 'middle';
+    c.font = `800 ${Math.round(w * 0.045)}px Overpass, Arial, sans-serif`;
+    c.fillText(statusText(), cx, cy - w * 0.085);
+    c.font = `800 ${Math.round(w * 0.12)}px Overpass, Arial, sans-serif`;
+    c.fillText(`${Math.round(m * MPH)}`, cx, cy + w * 0.01);
+    c.fillStyle = PAL.muted; c.font = `600 ${Math.round(w * 0.034)}px Overpass, Arial, sans-serif`;
+    const mm = Math.floor(sim.t / 60), ss = Math.floor(sim.t % 60).toString().padStart(2, '0');
+    c.fillText(`mph average, ${mm}:${ss} in`, cx, cy + w * 0.085);
+  }
+  function roundRect(c, x, y, w, h, r) {
+    c.beginPath(); c.moveTo(x + r, y); c.lineTo(x + w - r, y); c.quadraticCurveTo(x + w, y, x + w, y + r);
+    c.lineTo(x + w, y + h - r); c.quadraticCurveTo(x + w, y + h, x + w - r, y + h); c.lineTo(x + r, y + h);
+    c.quadraticCurveTo(x, y + h, x, y + h - r); c.lineTo(x, y + r); c.quadraticCurveTo(x, y, x + r, y); c.closePath();
+  }
+
+  function drawTs() {
+    const { w, h, dpr } = fit(ts, 260);
+    const c = tctx; c.setTransform(dpr, 0, 0, dpr, 0, 0);
+    c.fillStyle = PAL.asphalt; c.fillRect(0, 0, w, h);
+    const left = 54, right = 14, top = 14, bottom = 30, pw = w - left - right, ph = h - top - bottom;
+    const span = 120, tNow = sim.t;
+    c.strokeStyle = 'rgba(255,255,255,0.10)'; c.lineWidth = 1;
+    c.fillStyle = 'rgba(255,255,255,0.62)'; c.font = '600 12px Overpass, Arial, sans-serif';
+    c.textAlign = 'right'; c.textBaseline = 'middle';
+    for (const m of [0, 130, 260]) {
+      const y = top + ph * (1 - m / sim.L);
+      c.beginPath(); c.moveTo(left, y + 0.5); c.lineTo(left + pw, y + 0.5); c.stroke();
+      c.fillText(`${m} m`, left - 8, y);
+    }
+    c.textAlign = 'center'; c.textBaseline = 'top';
+    for (const [sec, label] of [[120, '2 min ago'], [60, '1 min ago'], [0, 'now']]) {
+      const x = left + pw * (1 - sec / span);
+      c.beginPath(); c.moveTo(x + 0.5, top); c.lineTo(x + 0.5, top + ph); c.stroke();
+      c.textAlign = sec === 0 ? 'right' : (sec === 120 ? 'left' : 'center');
+      c.fillText(label, x, top + ph + 9);
+    }
+    const dot = Math.max(2, Math.min(3, pw / 400));
+    for (const s of S) {
+      const age = tNow - s.t; if (age > span) continue;
+      const x = left + pw * (1 - age / span);
+      for (let i = 0; i < s.v.length; i++) {
+        const y = top + ph * (1 - s.x_[i] / sim.L);
+        c.fillStyle = s.ai[i] ? PAL.ai : speedColor(s.v[i]);
+        const d = s.ai[i] ? dot + 1 : dot;
+        c.fillRect(x - d / 2, y - d / 2, d, d);
+      }
+    }
+  }
+
+  function risk(f) { return jamRisk(f, MODEL); }
+
+  function updateUi() {
+    const k = S.length - 1, latest = S[k];
+    let sum = 0, sum2 = 0, n = 0, from = k;
+    while (from > 0 && latest.t - S[from - 1].t <= 60) from--;
+    for (let j = from; j <= k; j++) for (let i = 0; i < S[j].v.length; i++) { sum += S[j].v[i]; sum2 += S[j].v[i] ** 2; n++; }
+    const mean = n ? sum / n : 0, sd = n ? Math.sqrt(Math.max(0, sum2 / n - mean * mean)) : 0;
+    document.getElementById('rAvg').textContent = `${(mean * MPH).toFixed(1)} mph`;
+    document.getElementById('rSwing').textContent = `${(sd * MPH).toFixed(1)} mph`;
+    document.getElementById('rBrakes').textContent = `${latest.hb - S[from].hb}`;
+    let stopped = 0; for (let i = 0; i < sim.N; i++) if (sim.v[i] < 0.5) stopped++;
+    document.getElementById('rStopped').textContent = `${stopped} of ${sim.N}`;
+    const pct = document.getElementById('fcPct'), bar = document.getElementById('fcBar'), lab = document.getElementById('fcLabel');
+    if (k >= 39 && latest.sd > 2.5) {
+      lab.textContent = 'Jam happening now'; pct.textContent = 'Now'; bar.style.width = '100%'; bar.style.backgroundColor = PAL.red;
+    } else if (k >= 39 && waveNow(S, k)) {
+      lab.textContent = 'Jam easing off'; pct.textContent = 'Wait'; bar.style.width = '60%'; bar.style.backgroundColor = PAL.amber;
+    } else if (k >= 39) {
+      const p = risk(jamFeatures(S, k));
+      lab.textContent = 'Jam risk in the next minute'; pct.textContent = `${Math.round(p * 100)}%`;
+      bar.style.width = `${Math.max(2, p * 100)}%`;
+      bar.style.backgroundColor = p >= 0.4 ? PAL.red : (p >= 0.2 ? PAL.amber : PAL.sign);
+    } else {
+      lab.textContent = 'Jam risk in the next minute'; pct.textContent = 'Warming up'; bar.style.width = '0%';
+    }
+    const st = statusText();
+    if (st !== lastStatus) { lastStatus = st; if (sim.t > 4) say(st + '.'); }
+  }
+
+  function frame(now) {
+    const dtReal = Math.min(0.05, (now - last) / 1000); last = now;
+    if (playing) {
+      simAcc += dtReal * speed;
+      let guard = 0;
+      while (simAcc >= sim.dt && guard < 40) { stepOnce(); simAcc -= sim.dt; guard++; }
+    }
+    drawRing(now);
+    if (now - lastTs > 100) { drawTs(); lastTs = now; }
+    if (now - lastUi > 250) { updateUi(); lastUi = now; }
+    requestAnimationFrame(frame);
+  }
+
+  aiInput.addEventListener('input', () => {
+    const k = +aiInput.value;
+    aiOut.textContent = `${k} of 22 cars${k ? ` (${Math.round((k / 22) * 100)}%)` : ''}`;
+    sim.setAI(k, style());
+  });
+  document.querySelectorAll('input[name="style"]').forEach(r => r.addEventListener('change', () => sim.setAI(+aiInput.value, style())));
+  document.querySelectorAll('input[name="speed"]').forEach(r => r.addEventListener('change', e => { speed = +e.target.value; }));
+  document.getElementById('tap').addEventListener('click', () => tap(false));
+  document.getElementById('restart').addEventListener('click', () => { restart(); say('Restarted with a fresh set of drivers.'); });
+  playBtn.addEventListener('click', () => { playing = !playing; playBtn.textContent = playing ? 'Pause' : 'Play'; });
+  if (!playing) playBtn.textContent = 'Play';
+
+  restart();
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

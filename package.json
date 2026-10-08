@@ -1,0 +1,18 @@
+{
+  "name": "phantom-jam-lab",
+  "version": "1.0.0",
+  "description": "Ring-road traffic simulation: watch a phantom jam form, add AI drivers, and forecast jams with machine learning.",
+  "license": "MIT",
+  "author": "Anas Ahmed (https://github.com/siroxou)",
+  "private": true,
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "build": "node scripts/build.js",
+    "test": "node --test",
+    "experiments": "node scripts/experiments.js",
+    "calibrate": "node scripts/experiments.js --calibrate",
+    "dataset": "node scripts/dataset.js",
+    "train": "python3 model/train.py",
+    "forecast-check": "node scripts/forecast-check.js"
+  }
+}
