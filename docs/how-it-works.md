@@ -49,7 +49,7 @@ $$
 | $k_1$ | 0.05 1/s² | 0.052 1/s² |
 | $k_2$ | 0.34 1/s | 0.338 1/s |
 | Time gap $t_h$ | 0.8 s | 0.819 s |
-| Sensor delay $\tau$ | 0.95 s | 0.948 s |
+| Sensor delay $\tau$ | 0.9 s (9 steps of 0.1 s) | 0.948 s |
 | Standstill gap $\eta$ | 2 m | 8.03 m |
 
 The standstill gap is shorter than the fitted value so the car can move at all with 22 cars on a 260 m loop. The copycat also gets small sensor noise (0.05 m/s²) and the same safety floor as the smoothing AI, standing in for automatic emergency braking.

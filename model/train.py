@@ -40,7 +40,7 @@ results = [
 for r in results:
     print(f"{r['model']:<52} AUC {r['auc']:.3f}  precision {r['precision']:.0%}  recall {r['recall']:.0%}")
 print(f"train windows {len(train)}, test windows {len(test)}, jam rate {y[test].mean():.1%}")
-print("standardized coefficients:", dict(zip(FEATURES, lr.coef_[0].round(2))))
+print("standardized coefficients:", dict(zip(FEATURES, lr.coef_[0].round(2).tolist())))
 
 (ROOT / "model" / "model.json").write_text(json.dumps({
     "features": FEATURES,

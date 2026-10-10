@@ -4,7 +4,7 @@ A browser simulation of the phantom traffic jam. Twenty-two cars drive around a 
 
 ![Phantom Jam Lab mid-jam: red stopped cars bunched on one side of the ring, with controls and live readouts](docs/images/lab.png)
 
-Open `index.html` in any browser. There is nothing to install and no server to run.
+**[Try it live](https://siroxou.github.io/phantom-jam-lab/)**, or open `index.html` in any browser. There is nothing to install and no server to run.
 
 ## What it found
 
@@ -33,7 +33,7 @@ Details: [results](docs/results.md), [how the simulation works](docs/how-it-work
 3. Switch the AI to **Copycat**, press **Tap the brakes**, and watch the waves come back.
 4. Keep an eye on the jam risk gauge, which forecasts a jam in the next minute.
 
-To host it, turn on GitHub Pages: **Settings > Pages**, set the source to **Deploy from a branch**, pick `main` and `/ (root)`, and save. The lab then lives at `https://siroxou.github.io/phantom-jam-lab/`.
+The live copy at <https://siroxou.github.io/phantom-jam-lab/> is served by GitHub Pages straight from `index.html` on `main`.
 
 ## Run the code
 
@@ -78,6 +78,7 @@ model/train.py             trains and compares the forecasters
 model/model.json           trained logistic regression used by the page
 tests/sim.test.js          behavior checks (Node's built-in test runner)
 docs/                      how it works, results, forecaster model card
+.github/workflows/ci.yml   runs the tests and fails if index.html is out of date with src/
 ```
 
 ## Limitations
